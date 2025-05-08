@@ -13,7 +13,6 @@ const AddExpert = () => {
     const [experience,setExperience] = useState('1 Year')
     const [about,setAbout] = useState('')
     const [specialities, setSpecialities] = useState([]);
-    const [degree,setDegree] = useState('')
     const [address1,setAddress1] = useState('')
     const [address2,setAddress2] = useState('')
 
@@ -33,7 +32,6 @@ const AddExpert = () => {
             formData.append('email',email)
             formData.append('password',password)
             formData.append('experience',experience)
-            formData.append('degree',degree)
             formData.append('about',about)
             formData.append('specialities',JSON.stringify(specialities))
             formData.append('address',JSON.stringify({line1:address1,line2:address2}))
@@ -53,7 +51,6 @@ const AddExpert = () => {
                 setPassword('')
                 setAddress1('')
                 setAddress2('')
-                setDegree('')
                 setAbout('')
                 setSpecialities([])
             }else{
@@ -133,10 +130,7 @@ const AddExpert = () => {
                         <option value="10 Year">10 Year</option>
                     </select>
                 </div>
-                <div className='flex-1 flex flex-col gap-1'>
-                <p>Education</p>
-                <input onChange={(e)=>setDegree(e.target.value)} value={degree} className='border rounded px-3 py-2'  type="text" placeholder='Education' required/>
-            </div>
+                
 
             </div>
             <div className='w-full lg:flex-1 flex flex-col gap-4'>
@@ -145,7 +139,7 @@ const AddExpert = () => {
                 {specialityOptions.map((type) => {
                     const selected = specialities.find((s) => s.type === type);
                     return (
-                    <div key={type} className="flex items-center gap-3 mb-2">
+                    <div key={type} className="flex items-center gap-1 mb-1">
                         <input
                         type="checkbox"
                         checked={!!selected}
@@ -173,10 +167,10 @@ const AddExpert = () => {
                     );
                 })}
                 </div>
-            <div className='flex-1 flex flex-col gap-1'>
+            <div className='flex-1 flex flex-col gap-0.5'>
                 <p>Address</p>
-                <input onChange={(e)=>setAddress1(e.target.value)} value={address1} className='border rounded px-3 py-2'  type="text" placeholder='address 1' required/>
-                <input onChange={(e)=>setAddress2(e.target.value)} value={address2} className='border rounded px-3 py-2'  type="text" placeholder='address 2' required/>
+                <input onChange={(e)=>setAddress1(e.target.value)} value={address1} className='border rounded px-3 py-1'  type="text" placeholder='address 1' required/>
+                <input onChange={(e)=>setAddress2(e.target.value)} value={address2} className='border rounded px-3 py-1'  type="text" placeholder='address 2' required/>
             </div>
 
         </div>
