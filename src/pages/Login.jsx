@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import { AdminContext } from '../context/AdminContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { ExpertContext } from '../context/ExpertContext'
 
 
 const Login = () => {
@@ -12,6 +13,7 @@ const Login = () => {
     const [password,setPassword] = useState('')
 
     const {setAToken,backendUrl} = useContext(AdminContext)
+    const {setEToken} = useContext(ExpertContext)
 
     const onSubmitHandler = async(event)=> {
         event.preventDefault()
@@ -26,7 +28,14 @@ const Login = () => {
                     toast.error(data.message)
                 }
             }else{
-
+                const {data} = await axios.post(backendUrl+'/api/expert/login',{email,password})
+                if(data.success){
+                    localStorage.setItem('eToken',data.token)
+                    setEToken(data.token)
+                    console.log(data.token)
+                }else{
+                    toast.error(data.message)
+                }
                 
             }
         } catch (error) {
