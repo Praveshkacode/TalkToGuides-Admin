@@ -7,7 +7,7 @@ export const ExpertContext = createContext()
 
 const ExpertContextProvider = (props) => {
 
-    const backendUrl= import.meta.env.VITE_BACKEND_URL 
+    const backendUrl= import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000' 
 
     const [eToken,setEToken] = useState(localStorage.getItem('eToken')?localStorage.getItem('eToken'):'')
 
@@ -16,18 +16,27 @@ const ExpertContextProvider = (props) => {
 
         const getSessions = async () => {
     try {
+        console.log('Getting sessions with token:', eToken)
+        console.log('Backend URL:', backendUrl)
+        
         const { data } = await axios.get(backendUrl + '/api/expert/sessions', {
-        headers: { eToken }
+        headers: { 
+            eToken: eToken,
+            Authorization: `Bearer ${eToken}`
+        }
         });
 
+        console.log('Sessions response:', data)
+        
         if (data.success) {
         setSessions(data.sessions.reverse());
         } else {
         toast.error(data.message);
         }
     } catch (error) {
-        console.log(error);
-        toast.error(error.message);
+        console.log('Sessions error:', error);
+        console.log('Error details:', error.response?.data);
+        toast.error(error.response?.data?.message || error.message);
     }
     };
 
@@ -35,16 +44,27 @@ const ExpertContextProvider = (props) => {
 
     const getProfileData = async() => {
         try {
-            const {data} = await axios.get(backendUrl+'/api/expert/profile',{headers:{eToken}})
+            console.log('Getting profile with token:', eToken)
+            const {data} = await axios.get(backendUrl+'/api/expert/profile',{
+                headers:{
+                    eToken: eToken,
+                    Authorization: `Bearer ${eToken}`
+                }
+            })
 
+            console.log('Profile response:', data)
+            
             if(data.success){
                 setProfileData(data.profileData)
-                console.log(data.profileData);
+                console.log('Profile data set:', data.profileData);
+            } else {
+                toast.error(data.message)
             }
             
         } catch (error) {
-            console.log(error)
-            toast.error(error.message) 
+            console.log('Profile error:', error)
+            console.log('Error details:', error.response?.data);
+            toast.error(error.response?.data?.message || error.message) 
         }
     }
 

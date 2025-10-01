@@ -28,18 +28,24 @@ const Login = () => {
                     toast.error(data.message)
                 }
             }else{
+                console.log('Attempting expert login...');
                 const {data} = await axios.post(backendUrl+'/api/expert/login',{email,password})
+                console.log('Expert login response:', data);
+                
                 if(data.success){
                     localStorage.setItem('eToken',data.token)
                     setEToken(data.token)
-                    console.log(data.token)
+                    console.log('Expert token saved:', data.token)
+                    toast.success('Expert login successful!')
                 }else{
                     toast.error(data.message)
                 }
                 
             }
         } catch (error) {
-            
+            console.log('Login error:', error);
+            console.log('Error details:', error.response?.data);
+            toast.error(error.response?.data?.message || error.message || 'Login failed');
         }
 
     }
