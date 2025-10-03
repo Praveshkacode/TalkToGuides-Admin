@@ -79,6 +79,8 @@ const Chat = ({ roomId, senderId, senderType = 'expert', sessionId, expertId, us
       console.log('Admin leaving previous room:', currentRoomRef.current)
       socket.emit('leave_room', currentRoomRef.current)
     }
+    
+    console.log('Admin emitting join_room for:', roomId)
     socket.emit('join_room', roomId)
     currentRoomRef.current = roomId
 
@@ -99,7 +101,12 @@ const Chat = ({ roomId, senderId, senderType = 'expert', sessionId, expertId, us
     const onReceiveMessage = (data) => {
       console.log('Admin received message:', data, 'for room:', roomId)
       if (data.roomId === roomId) {
-        setMessages(prev => [...prev, data])
+        setMessages(prev => {
+          // Avoid duplicate messages
+          const exists = prev.find(msg => msg._id === data._id)
+          if (exists) return prev
+          return [...prev, data]
+        })
       }
     }
     const onUserTyping = (data) => {
@@ -121,10 +128,15 @@ const Chat = ({ roomId, senderId, senderType = 'expert', sessionId, expertId, us
     }
     const onJoinSuccess = (data) => {
       console.log('Admin successfully joined room:', data)
+      setError(null)
     }
     const onJoinError = (data) => {
       console.error('Admin failed to join room:', data)
       setError('Failed to join chat room: ' + data.error)
+    }
+    const onMessageError = (data) => {
+      console.error('Admin message error:', data)
+      setError(data.error)
     }
 
     socket.on('connect', onConnect)
@@ -135,6 +147,7 @@ const Chat = ({ roomId, senderId, senderType = 'expert', sessionId, expertId, us
     socket.on('message_read', onMessageRead)
     socket.on('join_success', onJoinSuccess)
     socket.on('join_error', onJoinError)
+    socket.on('message_error', onMessageError)
 
     if (socket.connected) setIsConnected(true)
 
@@ -147,6 +160,7 @@ const Chat = ({ roomId, senderId, senderType = 'expert', sessionId, expertId, us
       socket.off('message_read', onMessageRead)
       socket.off('join_success', onJoinSuccess)
       socket.off('join_error', onJoinError)
+      socket.off('message_error', onMessageError)
     }
   }, [roomId, senderId])
 

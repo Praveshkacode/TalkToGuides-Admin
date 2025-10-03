@@ -71,7 +71,11 @@ const ExpertSessions = () => {
 
       {sessions.map((session, index) => {
         const userId = session.userId
-        const roomId = `session-${userId}-${expertId}`
+        const roomId = session._id // Use session ID as room ID
+        const fallbackRoomId = `session-${userId}-${expertId}` // Fallback for compatibility
+        
+        console.log('Session:', session._id, 'RoomId:', roomId, 'Fallback:', fallbackRoomId)
+        
         return (
           <div key={index} className="border p-4 mb-6 rounded-md shadow-sm bg-white">
             <div className="flex items-center justify-between mb-3">
@@ -79,6 +83,7 @@ const ExpertSessions = () => {
                 <p className="font-medium text-gray-900">{session.userName || `User ${userId.substring(0, 6)}`}</p>
                 <p className="text-sm text-gray-500">Started: {new Date(session.createdAt || session.date).toLocaleString()}</p>
                 <p className="text-xs text-gray-400 mt-1">Status: {session.status}</p>
+                <p className="text-xs text-gray-400">Session ID: {session._id}</p>
               </div>
             </div>
 
@@ -104,7 +109,7 @@ const ExpertSessions = () => {
                 {activeChatUserId === userId && (
                   <div className="mt-4 border-t pt-4">
                     <Chat
-                      roomId={session._id}
+                      roomId={roomId}
                       senderId={expertId}
                       senderType="expert"
                       sessionId={session._id}
